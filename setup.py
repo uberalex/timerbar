@@ -1,7 +1,7 @@
 from setuptools import setup
 
 APP = ['timerbar.py']
-DATA_FILES = []
+DATA_FILES = ['data']
 OPTIONS = {
     'argv_emulation': True,
     'plist': {

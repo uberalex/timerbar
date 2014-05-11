@@ -69,7 +69,7 @@ def stoptimer(sender):
     timeleft = 0
 
 #App Definition
-app = rumps.App("Timebar", title="TimeBar")
+app = rumps.App("Timebar", title="TimerBar", icon="data/rooster-128.png")
 
 #The Menu
 app.menu = [
