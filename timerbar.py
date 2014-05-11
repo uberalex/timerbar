@@ -67,6 +67,12 @@ def fifteenmincall(sender):
     """ start a counter for twenty-five mins"""
     startcount(25)
 
+@rumps.clicked("Start Timer", "Custom...")
+def customcall(sender):
+    response = rumps.Window('Enter number of minutes').run()
+    if response.clicked:
+        startcount(int (response.text))
+
 
 @rumps.clicked("Stop")
 def stoptimer(sender):
@@ -85,7 +91,8 @@ app.menu = [
         [rumps.MenuItem("5:00"),
          rumps.MenuItem("10:00"),
          rumps.MenuItem("15:00"),
-         rumps.MenuItem("25:00")]},
+         rumps.MenuItem("25:00"),
+         rumps.MenuItem("Custom...")]},
         None,
         rumps.MenuItem("Stop")
 ]

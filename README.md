@@ -10,3 +10,7 @@ To Create a standalon app, ensure you have py2app installed and use:
     python setup.py py2app
 
 the resulting app is in the dist directory
+
+## Known Issues
+1. Will pause if you click on the menu and leave it open, losing time
+2. Doesn't likw decminal or other invalid input to the custom dialogue box
