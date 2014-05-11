@@ -23,7 +23,7 @@ notify = False
 
 @rumps.timer(1)
 def tick(sender):
-    """ Called authomatically every second """
+    """ Called automatically every second """
     global elapsed
     global timeleft
     global notify
@@ -32,7 +32,7 @@ def tick(sender):
     if timeleft > 0:
         timeleft -= 1
         elapsed += 1
-        app.title = 'TimerBar (%s:%s)' %  (timeleft / 60, timeleft % 60)
+        app.title = 'TimerBar (%02d:%02d)' %  (timeleft / 60, timeleft % 60)
     if timeleft == 0 and notify:
         timeleft = 0
         app.title = 'TimerBar (Done!)'
@@ -62,6 +62,12 @@ def fifteenmincall(sender):
     """ start a counter for fifteen mins"""
     startcount(15)
 
+@rumps.clicked("Start Timer", "25:00")
+def fifteenmincall(sender):
+    """ start a counter for twenty-five mins"""
+    startcount(25)
+
+
 @rumps.clicked("Stop")
 def stoptimer(sender):
     global timeleft
@@ -78,7 +84,8 @@ app.menu = [
         {'Start Timer':
         [rumps.MenuItem("5:00"),
          rumps.MenuItem("10:00"),
-         rumps.MenuItem("15:00")]},
+         rumps.MenuItem("15:00"),
+         rumps.MenuItem("25:00")]},
         None,
         rumps.MenuItem("Stop")
 ]
