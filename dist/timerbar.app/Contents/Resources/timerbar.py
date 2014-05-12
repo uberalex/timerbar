@@ -7,6 +7,7 @@
 import os
 import sys
 import rumps # uses the rumps library from http://github.com/tito/rumps
+import time
 
 __author__ = "Alexander O'Connor <oconnoat@gmail.com>"
 __copyright__ = "Copyright 2012, Alexander O'Connor <oconnoat@gmail.com>"
@@ -19,31 +20,36 @@ __status__ = "Prototype"
 timeleft = 0
 elapsed = 0
 notify = False
+start_time = 0
 
 
 @rumps.timer(1)
 def tick(sender):
     """ Called automatically every second """
     global elapsed
+    global start_time
     global timeleft
     global notify
     global app
 
-    if timeleft > 0:
-        timeleft -= 1
-        elapsed += 1
-        app.title = 'TimerBar (%02d:%02d)' %  (timeleft / 60, timeleft % 60)
-    if timeleft == 0 and notify:
-        timeleft = 0
+    elapsed = time.time() - start_time
+
+    if timeleft > elapsed :
+        app.title = 'TimerBar (%02d:%02d)' %  ((timeleft - elapsed) / 60, (timeleft - elapsed) % 60)
+
+    if (timeleft - elapsed) < 1 and notify:
         app.title = 'TimerBar (Done!)'
-        rumps.notification(title="Countdown Done!", subtitle="TimerBar", message="The Timer has Completed!\nSeconds elapsed:"+str(elapsed)+"s.")
+        rumps.notification(title="Countdown Done!", subtitle="TimerBar", sound=True, message="The Timer has Completed!\nSeconds elapsed:"+str(elapsed)+"s.")
         notify = False
 
 def startcount(mins):
     """start a counter for num mins"""
     global timeleft
     global notify
+    global start_time
     timeleft = mins * 60 #convert to seconds
+    start_time = time.time()
+
     notify = True
     rumps.notification(title="Countdown has begun.", subtitle="TimerBar", message="Duration: "+str(mins)+"min.\nTime Left: "+str(timeleft)+"s.\nA Notification will be sent when the timer stops.")
 
@@ -71,8 +77,10 @@ def fifteenmincall(sender):
 def customcall(sender):
     response = rumps.Window('Enter number of minutes').run()
     if response.clicked:
-        startcount(int (response.text))
-
+        try:
+            startcount(float (response.text))
+        except Exception, e:
+            pass
 
 @rumps.clicked("Stop")
 def stoptimer(sender):
@@ -87,12 +95,12 @@ app = rumps.App("Timebar", title="TimerBar", icon="data/rooster-128.png")
 app.menu = [
         rumps.MenuItem('TimerBar'),
         None,
-        {'Start Timer':
+        [rumps.MenuItem("Start Timer",icon="data/alarm_clock-128.png", dimensions=(16,16)),
         [rumps.MenuItem("5:00"),
          rumps.MenuItem("10:00"),
          rumps.MenuItem("15:00"),
          rumps.MenuItem("25:00"),
-         rumps.MenuItem("Custom...")]},
+         rumps.MenuItem("Custom...")]],
         None,
         rumps.MenuItem("Stop")
 ]
