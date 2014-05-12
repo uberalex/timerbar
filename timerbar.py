@@ -35,10 +35,10 @@ def tick(sender):
     elapsed = time.time() - start_time
 
     if timeleft > elapsed :
-        app.title = 'TimerBar (%02d:%02d)' %  ((timeleft - elapsed) / 60, (timeleft - elapsed) % 60)
+        app.title = '(%02d:%02d)' %  ((timeleft - elapsed) / 60, (timeleft - elapsed) % 60)
 
     if (timeleft - elapsed) < 1 and notify:
-        app.title = 'TimerBar (Done!)'
+        app.title = 'Done!'
         rumps.notification(title="Countdown Done!", subtitle="TimerBar", sound=True, message="The Timer has Completed!\nSeconds elapsed:"+str(elapsed)+"s.")
         notify = False
 
@@ -89,7 +89,7 @@ def stoptimer(sender):
     timeleft = 0
 
 #App Definition
-app = rumps.App("Timebar", title="TimerBar", icon="data/rooster-128.png")
+app = rumps.App("Timebar", title="(00:00)", icon="data/rooster-128.png")
 
 #The Menu
 app.menu = [
