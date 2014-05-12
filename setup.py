@@ -8,6 +8,7 @@ OPTIONS = {
         'LSUIElement': True,
     },
     'packages': ['rumps'],
+    'iconfile': 'data/rooster-128.icns'
 }
 
 setup(

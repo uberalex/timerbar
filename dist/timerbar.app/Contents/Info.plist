@@ -22,7 +22,7 @@
 	<key>CFBundleExecutable</key>
 	<string>timerbar</string>
 	<key>CFBundleIconFile</key>
-	<string>PythonApplet.icns</string>
+	<string>rooster-128.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>org.pythonmac.unspecified.timerbar</string>
 	<key>CFBundleInfoDictionaryVersion</key>
