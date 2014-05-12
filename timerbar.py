@@ -13,9 +13,9 @@ __author__ = "Alexander O'Connor <oconnoat@gmail.com>"
 __copyright__ = "Copyright 2012, Alexander O'Connor <oconnoat@gmail.com>"
 __credits__ = ["Alexander O'Connor <oconnoat@gmail.com>"]
 __license__ = "Copyright"
-__version__ = "0.1"
+__version__ = "1.4"
 __email__ = "Alexander O'Connor <oconnoat@gmail.com>"
-__status__ = "Prototype"
+__status__ = "Release"
 
 timeleft = 0
 elapsed = 0
@@ -35,10 +35,10 @@ def tick(sender):
     elapsed = time.time() - start_time
 
     if timeleft > elapsed :
-        app.title = '(%02d:%02d)' %  ((timeleft - elapsed) / 60, (timeleft - elapsed) % 60)
+        app.title = "(%02d:%02d)" %  ((timeleft - elapsed) / 60, (timeleft - elapsed) % 60)
 
     if (timeleft - elapsed) < 1 and notify:
-        app.title = 'Done!'
+        app.title = "Done!"
         rumps.notification(title="Countdown Done!", subtitle="TimerBar", sound=True, message="The Timer has Completed!\nSeconds elapsed:"+str(elapsed)+"s.")
         notify = False
 
@@ -75,7 +75,7 @@ def fifteenmincall(sender):
 
 @rumps.clicked("Start Timer", "Custom...")
 def customcall(sender):
-    response = rumps.Window('Enter number of minutes').run()
+    response = rumps.Window("Enter number of minutes").run()
     if response.clicked:
         try:
             startcount(float (response.text))
@@ -88,12 +88,16 @@ def stoptimer(sender):
     """Set the time left to zero"""
     timeleft = 0
 
+@rumps.clicked("About TimerBar")
+def aboutButton(sender):
+    rumps.Window(title="TimerBar, by Alexander O'Connor", message="Thanks for using TimerBar! Please feel free to send feedback on twitter to @uberalex", default_text="To use it, just run the app and select the time limit you would like to count down to. You can click the stop button any time.\n\nThe Custom... range will accept decimal values (so 0.5 will give a 30 second countdown).\n\nNote that it's not second-accurate.").run()
+
 #App Definition
 app = rumps.App("Timebar", title="(00:00)", icon="data/rooster-128.png")
 
 #The Menu
 app.menu = [
-        rumps.MenuItem('TimerBar'),
+        rumps.MenuItem("About TimerBar"),
         None,
         [rumps.MenuItem("Start Timer",icon="data/alarm_clock-128.png", dimensions=(16,16)),
         [rumps.MenuItem("5:00"),
@@ -108,5 +112,5 @@ app.menu = [
 
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
