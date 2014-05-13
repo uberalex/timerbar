@@ -7,7 +7,7 @@ OPTIONS = {
     'plist': {
         'LSUIElement': True,
     },
-    'packages': ['rumps'],
+    'packages': ['rumps', 'parsedatetime'],
     'iconfile': 'data/rooster-128.icns'
 }
 
