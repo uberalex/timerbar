@@ -50,7 +50,7 @@ def startcount(target):
     target_time = target
     notify = True
 
-    rumps.notification(title="Countdown has begun.", subtitle="TimerBar", message="Ends at %s"%target)
+    rumps.notification(title="Countdown has begun.", subtitle="TimerBar", message="Ends at %s"%target.strftime('%X on %x'))
 
 @rumps.clicked("Start Timer", "5:00")
 def fivemincall(sender):
