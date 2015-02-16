@@ -100,7 +100,8 @@ def aboutButton(sender):
     rumps.Window(title="TimerBar, by Alexander O'Connor", message="Thanks for using TimerBar! Please feel free to send feedback on twitter to @uberalex", default_text="To use it, just run the app and select the time limit you would like to count down to. You can click the stop button any time.\n\nThe Custom... box will take a variety of input such as '5 minutes' or 'at 4pm' or 'tomorrow' (see https://code.google.com/p/parsedatetime/ for more examples).").run()
 
 #App Definition
-app = rumps.App("Timebar", title="(00:00:00)", icon="data/rooster-128.png")
+# For some reason it was clipping the title, but only on startup
+app = rumps.App(name="Timebar", title="(00:00:00)\t", icon="data/rooster-128.png")
 
 #The Menu
 app.menu = [
