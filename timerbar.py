@@ -14,7 +14,7 @@ __author__ = "Alexander O'Connor <oconnoat@gmail.com>"
 __copyright__ = "Copyright 2014, Alexander O'Connor <oconnoat@gmail.com>"
 __credits__ = ["Alexander O'Connor <oconnoat@gmail.com>"]
 __license__ = "Copyright"
-__version__ = "1.5"
+__version__ = "1.6.1"
 __email__ = "Alexander O'Connor <oconnoat@gmail.com>"
 __status__ = "Release"
 

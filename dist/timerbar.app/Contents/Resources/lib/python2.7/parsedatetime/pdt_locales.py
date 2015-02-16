@@ -1,19 +1,9 @@
-
+# -*- coding: utf-8 -*-
 """
 pdt_locales
 
 All of the included locale classes shipped with pdt.
 """
-
-__author__       = 'Mike Taylor (bear@code-bear.com)'
-__copyright__    = 'Copyright (c) 2004 Mike Taylor'
-__license__      = 'Apache v2.0'
-__version__      = '1.0.0'
-__contributors__ = [ 'Darshana Chhajed',
-                     'Michael Lim (lim.ck.michael@gmail.com)',
-                     'Bernd Zeimetz (bzed@debian.org)',
-                   ]
-
 
 import datetime
 
@@ -82,7 +72,7 @@ class pdtLocale_base(object):
         # Used to parse expressions like "in 5 hours"
         self.numbers = { 'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
                          'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9,
-                         'ten': 10, 'eleven': 11, 'twelve': 12, 'thirtheen': 13,
+                         'ten': 10, 'eleven': 11, 'twelve': 12, 'thirteen': 13,
                          'fourteen': 14, 'fifteen': 15, 'sixteen': 16,
                          'seventeen': 17, 'eighteen': 18, 'nineteen': 19,
                          'twenty': 20 }
@@ -164,7 +154,10 @@ class pdtLocale_icu(pdtLocale_base):
         if self.icu is not None:
             # grab spelled out format of all numbers from 0 to 100
             rbnf = pyicu.RuleBasedNumberFormat(pyicu.URBNFRuleSetTag.SPELLOUT, self.icu)
-            self.numbers = dict([(rbnf.format(i), i) for i in xrange(0, 100)])
+            try:
+                self.numbers = dict([(rbnf.format(i), i) for i in xrange(0, 100)])
+            except NameError:
+                self.numbers = dict([(rbnf.format(i), i) for i in range(0, 100)])
 
             self.symbols = pyicu.DateFormatSymbols(self.icu)
 
@@ -258,7 +251,6 @@ class pdtLocale_icu(pdtLocale_base):
             self.dp_order = dp_order
 
 
-
 class pdtLocale_en(pdtLocale_base):
     """
     en_US Locale
@@ -289,6 +281,7 @@ class pdtLocale_au(pdtLocale_base):
         self.timeFormats['long']   = self.timeFormats['full']
 
         self.dp_order = [ 'd', 'm', 'y' ]
+
 
 class pdtLocale_es(pdtLocale_base):
     """
@@ -383,7 +376,7 @@ class pdtLocale_de(pdtLocale_base):
         self.units['days']    = [ 'tag',  'tage',     't' ]
         self.units['weeks']   = [ 'wochen',           'w' ]
         self.units['months']  = [ 'monat', 'monate' ]  #the short version would be a capital M,
-                                                       #as I understand it we can't distinguis
+                                                       #as I understand it we can't distinguish
                                                        #between m for minutes and M for months.
         self.units['years']   = [ 'jahr', 'jahre',    'j' ]
 

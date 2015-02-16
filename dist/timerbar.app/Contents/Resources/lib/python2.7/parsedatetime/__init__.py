@@ -1,15 +1,33 @@
-"""
-parsedatetime
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# vim: sw=2 ts=2 sts=2
+#
+# Copyright 2004-2014 Mike Taylor
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""parsedatetime
 
 Parse human-readable date/time text.
 
 Requires Python 2.6 or later
 """
 
-__author__       = 'Mike Taylor (bear@code-bear.com)'
+__author__       = 'Mike Taylor (bear@bear.im)'
 __copyright__    = 'Copyright (c) 2004 Mike Taylor'
 __license__      = 'Apache v2.0'
-__version__      = '1.2'
+__version__      = '1.4'
 __contributors__ = [ 'Darshana Chhajed',
                      'Michael Lim (lim.ck.michael@gmail.com)',
                      'Bernd Zeimetz (bzed@debian.org)',
@@ -227,7 +245,7 @@ class Calendar:
         self.weekdyFlag    = False  # monday/tuesday/...
         self.dateStdFlag   = False  # 07/21/06
         self.dateStrFlag   = False  # July 21st, 2006
-        self.timeStdFlag   = False  # 5:50 
+        self.timeStdFlag   = False  # 5:50
         self.meridianFlag  = False  # am/pm
         self.dayStrFlag    = False  # tomorrow/yesterday/today/..
         self.timeStrFlag   = False  # lunch/noon/breakfast/...
@@ -900,7 +918,7 @@ class Calendar:
 
         if not flag:
             m = self.ptc.CRE_TIME.match(unit)
-            if m is not None:
+            if m is not None or unit in self.ptc.re_values['now']:
                 log.debug('CRE_TIME matched')
                 self.modifierFlag = False
                 (yr, mth, dy, hr, mn, sec, wd, yd, isdst), _ = self.parse(unit)
@@ -1277,6 +1295,50 @@ class Calendar:
         else:
             return False
 
+    def parseDT(self, datetimeString, sourceTime=None, tzinfo=None):
+        """
+        C{datetimeString} is as C{.parse}, C{sourceTime} has the same semantic
+        meaning as C{.parse}, but now also accepts datetime objects.  C{tzinfo}
+        accepts a tzinfo object.  It is advisable to use pytz.
+
+
+        @type  datetimeString: string
+        @param datetimeString: date/time text to evaluate
+        @type  sourceTime:     struct_time, datetime, date, time
+        @param sourceTime:     time value to use as the base
+        @type  tzinfo:         tzinfo
+        @param tzinfo:         Timezone to apply to generated datetime objs.
+
+        @rtype:  tuple
+        @return: tuple of datetime object and an int of the return code
+
+        see .parse for return code details.
+        """
+        # if sourceTime has a timetuple method, use thet, else, just pass the
+        # entire thing to parse and prey the user knows what the hell they are
+        # doing.
+        sourceTime = getattr(sourceTime, 'timetuple', (lambda: sourceTime))()
+        # You REALLY SHOULD be using pytz.  Using localize if available,
+        # hacking if not.  Note, None is a valid tzinfo object in the case of
+        # the ugly hack.
+        localize = getattr(
+            tzinfo,
+            'localize',
+            (lambda dt: dt.replace(tzinfo=tzinfo)),  # ugly hack is ugly :(
+        )
+
+        # Punt
+        time_struct, ret_code = self.parse(
+            datetimeString,
+            sourceTime=sourceTime
+        )
+
+        # Comments from GHI indicate that it is desired to have the same return
+        # signature on this method as that one it punts to, with the exception
+        # of using datetime objects instead of time_structs.
+        dt = localize(datetime.datetime(*time_struct[:6]))
+        return (dt, ret_code)
+
     def parse(self, datetimeString, sourceTime=None):
         """
         Splits the given C{datetimeString} into tokens, finds the regex
@@ -1492,10 +1554,10 @@ class Calendar:
             if parseStr == '':
                 # Natural language time strings
                 m = self.ptc.CRE_TIME.search(s)
-                if m is not None:
+                if m is not None or s in self.ptc.re_values['now']:
                     self.timeStrFlag = True
                     self.timeFlag    = 2
-                    if (m.group('time') != s):
+                    if (m and m.group('time') != s):
                         # capture remaining string
                         parseStr = m.group('time')
                         chunk1   = s[:m.start('time')]
@@ -1648,7 +1710,7 @@ class Calendar:
             m = m % 12      # get remaining months
 
             if mi < 0:
-                y *= -1                 # otherwise negative mi will give future dates                                
+                y *= -1                 # otherwise negative mi will give future dates
                 mth = mth - m           # sub months from start month
                 if mth < 1:             # cross start-of-year?
                     y   -= 1            #   yes - decrement year
@@ -1931,7 +1993,7 @@ def _initSymbols(ptc):
     Initialize symbols and single character constants.
     """
       # build am and pm lists to contain
-      # original case, lowercase and first-char
+      # original case, lowercase, first-char and dotted
       # versions of the meridian text
 
     if len(ptc.locale.meridian) > 0:
@@ -1940,9 +2002,11 @@ def _initSymbols(ptc):
 
         if len(am) > 0:
             ptc.am.append(am[0])
+            ptc.am.append('{0}.{1}.'.format(am[0], am[1]))
             am = am.lower()
             ptc.am.append(am)
             ptc.am.append(am[0])
+            ptc.am.append('{0}.{1}.'.format(am[0], am[1]))
     else:
         am     = ''
         ptc.am = [ '', '' ]
@@ -1953,9 +2017,11 @@ def _initSymbols(ptc):
 
         if len(pm) > 0:
             ptc.pm.append(pm[0])
+            ptc.pm.append('{0}.{1}.'.format(pm[0], pm[1]))
             pm = pm.lower()
             ptc.pm.append(pm)
             ptc.pm.append(pm[0])
+            ptc.pm.append('{0}.{1}.'.format(pm[0], pm[1]))
     else:
         pm     = ''
         ptc.pm = [ '', '' ]
@@ -2066,7 +2132,7 @@ class Constants(object):
         # week +1                       F
 
         self.CurrentDOWParseStyle = False
-        
+
         if self.usePyICU:
             self.locale = pdtLocales['icu'](self.localeID)
 
@@ -2122,7 +2188,7 @@ class Constants(object):
             lmodifiers = []
             lmodifiers2 = []
             for s in self.locale.Modifiers:
-                if self.locale.Modifiers[s] < 0 or s == 'after':
+                if self.locale.Modifiers[s] < 0 or s in ['after', 'from']:
                     lmodifiers2.append(s)
                 elif self.locale.Modifiers[s] > 0:
                     lmodifiers.append(s)
