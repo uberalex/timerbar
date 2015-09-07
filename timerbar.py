@@ -29,15 +29,16 @@ def tick(sender):
     global app
 
     if target_time:
-        timeleft = target_time - datetime.now()
+        notify = True
+        timeleft = target_time[0] - datetime.now()
 
         app.title = "(%02d:%02d:%02d)" % (timeleft.total_seconds()//3600,(timeleft.seconds % 3600)//60, timeleft.seconds%60)
 
         if (timeleft.total_seconds() < 1) and notify:
             app.title = "Done!"
             rumps.notification(title="Countdown Done!", subtitle="TimerBar", sound=True, message="The Timer has Completed!")
+            target_time.pop(0)
             notify = False
-            target_time = None
 
 def startcount(target):
     """start a counter for num mins"""
@@ -52,28 +53,35 @@ def startcount(target):
 
     rumps.notification(title="Countdown has begun.", subtitle="TimerBar", message="Ends at %s"%target.strftime('%X on %x'))
 
+@rumps.clicked("Pomodoro")
+def pomodoro(sender):
+    """ start a 25/5 cycle"""
+    time_now = datetime.now()
+    target = [time_now + timedelta(minutes=25), time_now + timedelta(minutes=30)]
+    startcount(target)
+
 @rumps.clicked("Start Timer", "5:00")
 def fivemincall(sender):
     """ start a counter for five mins"""
-    target = datetime.now() + timedelta(minutes=5)
+    target = [datetime.now() + timedelta(minutes=5)]
     startcount(target)
 
 @rumps.clicked("Start Timer", "10:00")
 def tenmincall(sender):
     """ start a counter for ten mins"""
-    target = datetime.now() + timedelta(minutes=10)
+    target = [datetime.now() + timedelta(minutes=10)]
     startcount(target)
 
 @rumps.clicked("Start Timer", "15:00")
 def fifteenmincall(sender):
     """ start a counter for fifteen mins"""
-    target = datetime.now() + timedelta(minutes=15)
+    target = [datetime.now() + timedelta(minutes=15)]
     startcount(target)
 
 @rumps.clicked("Start Timer", "25:00")
 def fifteenmincall(sender):
     """ start a counter for twenty-five mins"""
-    target = datetime.now() + timedelta(minutes=25)
+    target = [datetime.now() + timedelta(minutes=25)]
     startcount(target)
 
 @rumps.clicked("Start Timer", "Custom...")
@@ -85,7 +93,7 @@ def customcall(sender):
     if response.clicked:
         try:
             print(datetime(*p.parse(response.text)[0][:6]))
-            startcount(datetime(*p.parse(response.text)[0][:6]))
+            startcount([datetime(*p.parse(response.text)[0][:6])])
         except Exception, e:
             print e
 
@@ -93,18 +101,20 @@ def customcall(sender):
 def stoptimer(sender):
     global target_time
     """Set the time left to zero"""
-    target_time = datetime.now()
+    target_time = [datetime.now()]
 
 @rumps.clicked("About TimerBar")
 def aboutButton(sender):
     rumps.Window(title="TimerBar, by Alexander O'Connor", message="Thanks for using TimerBar! Please feel free to send feedback on twitter to @uberalex", default_text="To use it, just run the app and select the time limit you would like to count down to. You can click the stop button any time.\n\nThe Custom... box will take a variety of input such as '5 minutes' or 'at 4pm' or 'tomorrow' (see https://code.google.com/p/parsedatetime/ for more examples).").run()
 
 #App Definition
-app = rumps.App("Timebar", title="(00:00:00)", icon="data/rooster-128.png")
+app = rumps.App("Timebar", title="(00:00:00)\t", icon="data/rooster-128.png")
 
 #The Menu
 app.menu = [
         rumps.MenuItem("About TimerBar"),
+        None,
+        rumps.MenuItem("Pomodoro", icon="data/tomato-100.png", dimensions=(16,16)),
         None,
         [rumps.MenuItem("Start Timer",icon="data/alarm_clock-128.png", dimensions=(16,16)),
         [rumps.MenuItem("5:00"),
