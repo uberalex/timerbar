@@ -14,3 +14,8 @@ To Create a standalon app, ensure you have py2app installed and use:
 the resulting app is in the dist directory
 
 ## Known Issues
+
+* Building with virtualenv requires you to create an ``Info.plist`` in the
+directory.
+See [this comment by **Waldo1979**](https://github.com/jaredks/rumps/issues/47)
+for a fix. Just use ``which python`` to find your virtualenv's directory.
